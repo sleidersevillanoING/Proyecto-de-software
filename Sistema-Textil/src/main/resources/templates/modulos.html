@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Módulos - Sistema Textil</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="dashboard-body">
+    <div class="container">
+        <!-- 🧭 Encabezado -->
+        <div class="header">
+            <h1><i class="fas fa-cubes"></i> Módulos de Producción</h1>
+            <div class="user-info">
+                <p>Bienvenido, <strong th:text="${usuario.nombreCompleto}">Usuario</strong></p>
+                <p>Rol: <strong th:text="${usuario.rol}">Rol</strong></p>
+            </div>
+        </div>
+
+        <!-- 🔗 Navegación -->
+        <div class="nav">
+            <a th:href="@{/web/dashboard}"><i class="fas fa-home"></i> Dashboard</a>
+            <a th:href="@{/web/modulos}" class="active"><i class="fas fa-cubes"></i> Módulos</a>
+            <a th:href="@{/web/reportes}"><i class="fas fa-chart-bar"></i> Reportes</a>
+            <a th:href="@{/web/historial-reportes}"><i class="fas fa-history"></i> Historial</a>
+            <a th:href="@{/web/logout}" class="logout"><i class="fas fa-sign-out-alt"></i> Cerrar Sesión</a>
+        </div>
+
+        <!-- ✅ Mensajes -->
+        <div th:if="${param.success}" class="alert alert-success">
+            <i class="fas fa-check-circle"></i>
+            <span th:text="${#strings.replace(param.success[0], '+', ' ')}">Operación exitosa</span>
+        </div>
+        <div th:if="${param.error}" class="alert alert-error">
+            <i class="fas fa-exclamation-circle"></i>
+            <span th:text="${#strings.replace(param.error[0], '+', ' ')}">Error en la operación</span>
+        </div>
+
+        <!-- ➕ BOTÓN CON FORMULARIO DENTRO -->
+        <div class="card">
+            <div class="card-header">
+                <i class="fas fa-plus-circle"></i>
+                <h2>🆕 Crear Nuevo Módulo</h2>
+            </div>
+            <div class="card-body">
+                <!-- Botón que CONTIENE el formulario -->
+                <div class="expandable-button">
+                    <input type="checkbox" id="create-module-toggle" class="toggle-checkbox">
+                    <label for="create-module-toggle" class="toggle-button">
+                        <i class="fas fa-plus"></i> 
+                        <span>Click aquí para crear un nuevo módulo</span>
+                        <i class="fas fa-chevron-down toggle-arrow"></i>
+                    </label>
+                    
+                    <!-- Formulario DENTRO del botón -->
+                    <div class="toggle-content">
+                        <div style="padding: 20px; background: #f8f9fa; border-radius: 8px; margin-top: 15px;">
+                            <h3 style="color: #003366; margin-bottom: 20px;">
+                                <i class="fas fa-industry"></i> Formulario de Creación de Módulo
+                            </h3>
+                            
+                            <form th:action="@{/web/modulos/crear}" method="post">
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label for="numeroModulo">Número de Módulo *:</label>
+                                        <input type="number" id="numeroModulo" name="numeroModulo" 
+                                               required class="form-control" min="1" max="100"
+                                               placeholder="Ej: 1, 2, 3...">
+                                        <small class="text-muted">Número único identificador</small>
+                                    </div>
+                                    
+                                    <div class="form-group">
+                                        <label for="nombreModulo">Nombre del Módulo *:</label>
+                                        <input type="text" id="nombreModulo" name="nombreModulo" 
+                                               required class="form-control" maxlength="100"
+                                               placeholder="Ej: Corte, Confección, Acabado">
+                                        <small class="text-muted">Nombre descriptivo del área</small>
+                                    </div>
+                                    
+                                    <div class="form-group">
+                                        <label for="supervisorId">Supervisor:</label>
+                                        <select id="supervisorId" name="supervisorId" class="form-control">
+                                            <option value="">-- Seleccionar Supervisor --</option>
+                                            <option th:each="supervisor : ${supervisores}" 
+                                                    th:value="${supervisor.id}"
+                                                    th:text="${supervisor.nombreCompleto} + ' (' + ${supervisor.username} + ')'">
+                                                Supervisor
+                                            </option>
+                                        </select>
+                                        <small class="text-muted" th:if="${#lists.isEmpty(supervisores)}" style="color: #dc3545;">
+                                            No hay supervisores disponibles. Crea usuarios con rol SUPERVISOR primero.
+                                        </small>
+                                        <small class="text-muted" th:if="${not #lists.isEmpty(supervisores)}">
+                                            Opcional - puede asignarse después
+                                        </small>
+                                    </div>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="descripcion">Descripción:</label>
+                                    <textarea id="descripcion" name="descripcion" class="form-control" 
+                                              rows="3" maxlength="500"
+                                              placeholder="Describe las funciones y responsabilidades de este módulo..."></textarea>
+                                    <small class="text-muted">Opcional - máximo 500 caracteres</small>
+                                </div>
+                                
+                                <div class="form-actions">
+                                    <button type="submit" class="btn btn-success">
+                                        <i class="fas fa-save"></i> Crear Módulo
+                                    </button>
+                                    <button type="reset" class="btn btn-warning">
+                                        <i class="fas fa-undo"></i> Limpiar
+                                    </button>
+                                    <label for="create-module-toggle" class="btn btn-secondary" style="cursor: pointer;">
+                                        <i class="fas fa-times"></i> Cerrar
+                                    </label>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 🧾 Tarjeta principal de módulos existentes -->
+        <div class="card">
+            <div class="card-header">
+                <i class="fas fa-list"></i>
+                <h2>📦 Módulos de Producción Existentes</h2>
+                <span class="module-status active" th:text="'Total: ' + ${#lists.size(modulosCompletos)}">Total: 0</span>
+            </div>
+
+            <div class="card-body">
+                <div class="modules-grid">
+                    <!-- 🔁 Recorre todos los módulos -->
+                    <div th:each="moduloInfo : ${modulosCompletos}" class="module-card">
+                        
+                        <!-- 🏭 Datos del Módulo -->
+                        <div class="module-section">
+                            <div class="section-header">
+                                <i class="fas fa-industry"></i>
+                                <h3>Módulo <span th:text="${moduloInfo.modulo.numeroModulo}">1</span></h3>
+                                <span class="module-status active">Activo</span>
+                            </div>
+                            <div class="module-info">
+                                <div class="info-row">
+                                    <span class="info-label">Nombre:</span>
+                                    <span class="info-value" th:text="${moduloInfo.modulo.nombreModulo}">Nombre del Módulo</span>
+                                </div>
+                                <div class="info-row">
+                                    <span class="info-label">Supervisor:</span>
+                                    <span class="info-value" th:if="${moduloInfo.supervisor != null}" 
+                                          th:text="${moduloInfo.supervisor.nombreCompleto} + ' (' + ${moduloInfo.supervisor.username} + ')'">Juan Pérez (juanp)</span>
+                                    <span class="info-value" th:if="${moduloInfo.supervisor == null}" style="color: #6c757d;">
+                                        No asignado
+                                    </span>
+                                </div>
+                                <div class="info-row">
+                                    <span class="info-label">Descripción:</span>
+                                    <span class="info-value" th:text="${moduloInfo.modulo.descripcion ?: 'Sin descripción'}" 
+                                          style="color: #6c757d; font-style: italic;">
+                                        Descripción del módulo
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 📅 Producción del Día -->
+                        <div class="module-section">
+                            <div class="section-header">
+                                <i class="fas fa-calendar-day"></i>
+                                <h3>Producción del Día</h3>
+                            </div>
+                            <div class="production-info">
+                                <div th:if="${moduloInfo.produccionDia != null}">
+                                    <div class="info-row">
+                                        <span class="info-label">Referencia:</span>
+                                        <span class="info-value" th:text="${moduloInfo.produccionDia.referencia}">REF-2023-001</span>
+                                    </div>
+                                    <div class="stats-row">
+                                        <div class="stat-item">
+                                            <span class="stat-label">Total:</span>
+                                            <span class="stat-value production" th:text="${moduloInfo.produccionDia.produccionTotal}">1250</span>
+                                        </div>
+                                        <div class="stat-item">
+                                            <span class="stat-label">Defectuosos:</span>
+                                            <span class="stat-value defects" th:text="${moduloInfo.produccionDia.defectuososTotal}">25</span>
+                                        </div>
+                                        <div class="stat-item">
+                                            <span class="stat-label">Eficiencia:</span>
+                                            <span class="stat-value efficiency" 
+                                                  th:text="${(moduloInfo.produccionDia.produccionTotal > 0) ? 
+                                                  #numbers.formatDecimal(
+                                                      (moduloInfo.produccionDia.produccionTotal - moduloInfo.produccionDia.defectuososTotal) / moduloInfo.produccionDia.produccionTotal * 100, 
+                                                  1, 1) : '0.0'} + '%'">98.0%</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div th:if="${moduloInfo.produccionDia == null}" class="no-production">
+                                    <i class="fas fa-info-circle"></i>
+                                    <span>No hay producción registrada para hoy</span>
+                                    <form th:action="@{/web/modulos/{id}/crear-produccion-dia(id=${moduloInfo.modulo.id})}" method="post" style="margin-top:10px;">
+                                        <button type="submit" class="btn btn-warning btn-small">
+                                            <i class="fas fa-plus-circle"></i> Crear Producción del Día
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- ⏱️ Producción por Hora -->
+                        <div class="module-section">
+                            <div class="section-header">
+                                <i class="fas fa-clock"></i>
+                                <h3>Producción por Hora</h3>
+                            </div>
+                            <div class="hourly-production">
+                                <div th:if="${moduloInfo.produccionDia != null}">
+                                    <div th:if="${not #lists.isEmpty(moduloInfo.produccionesHora)}" class="hours-list">
+                                        <div th:each="hora : ${moduloInfo.produccionesHora}" class="hour-item">
+                                            <span class="hour-time" th:text="${#temporals.format(hora.hora, 'HH:mm')}">08:00</span>
+                                            <span class="hour-production" th:text="${hora.cantidad}">150</span>
+                                            <span class="hour-defects" th:text="'(' + ${hora.defectuosos} + ')'">(3)</span>
+                                        </div>
+                                    </div>
+                                    <div th:if="${#lists.isEmpty(moduloInfo.produccionesHora)}" class="no-hours">
+                                        <i class="fas fa-clock"></i>
+                                        <span>No hay horas registradas</span>
+                                    </div>
+                                </div>
+                                <div th:if="${moduloInfo.produccionDia == null}" class="no-production-data">
+                                    <i class="fas fa-info-circle"></i>
+                                    <span>Crear producción del día primero</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- ➕ Agregar Nueva Hora -->
+                        <div class="module-section" th:if="${moduloInfo.produccionDia != null}">
+                            <div class="section-header">
+                                <i class="fas fa-plus-circle"></i>
+                                <h3>Agregar Nueva Hora</h3>
+                            </div>
+                            <div class="add-hour-form">
+                                <form th:action="@{/web/modulos/{id}/agregar-hora(id=${moduloInfo.modulo.id})}" method="post">
+                                    <div class="form-row">
+                                        <div class="form-group">
+                                            <label for="hora">Hora:</label>
+                                            <input type="time" id="hora" name="hora" th:value="${horaActual}" required class="form-control-small">
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="cantidad">Cantidad:</label>
+                                            <input type="number" id="cantidad" name="cantidad" min="0" value="0" required class="form-control-small">
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="defectuosos">Defectuosos:</label>
+                                            <input type="number" id="defectuosos" name="defectuosos" min="0" value="0" required class="form-control-small">
+                                        </div>
+                                    </div>
+                                    <div class="action-buttons">
+                                        <button type="submit" class="btn btn-primary btn-small">
+                                            <i class="fas fa-save"></i> Guardar Hora
+                                        </button>
+                                    </div>
+                                </form>
+
+                                <form th:action="@{/web/modulos/{id}/actualizar-totales(id=${moduloInfo.modulo.id})}" method="post" style="margin-top:10px;">
+                                    <button type="submit" class="btn btn-success btn-small">
+                                        <i class="fas fa-sync-alt"></i> Actualizar Totales
+                                    </button>
+                                </form>
+
+                                <a th:href="@{/web/modulos/{id}/generar-reporte(id=${moduloInfo.modulo.id})}" 
+                                   class="btn btn-warning btn-small" style="margin-top:8px; width:100%;">
+                                    <i class="fas fa-chart-bar"></i> Generar Reporte
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 📭 Si no hay módulos -->
+                    <div th:if="${#lists.isEmpty(modulosCompletos)}" class="no-modules">
+                        <i class="fas fa-inbox"></i>
+                        <p>No hay módulos registrados</p>
+                        <p style="color: #6c757d; font-size: 0.9rem; margin-top: 10px;">
+                            Usa el botón de arriba para crear el primer módulo
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 🕓 Script para funcionalidades -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Hora automática
+            const now = new Date();
+            const hours = now.getHours().toString().padStart(2, '0');
+            const minutes = now.getMinutes().toString().padStart(2, '0');
+            document.querySelectorAll('input[type="time"]').forEach(input => {
+                input.value = hours + ':' + minutes;
+            });
+
+            // Validación de defectuosos
+            document.querySelectorAll('input[name="defectuosos"]').forEach(input => {
+                input.addEventListener('change', function() {
+                    const cantidad = this.closest('.form-row').querySelector('input[name="cantidad"]').value;
+                    if (parseInt(this.value) > parseInt(cantidad)) {
+                        this.value = cantidad;
+                        alert('Los defectuosos no pueden ser mayores que la cantidad total');
+                    }
+                });
+            });
+
+            // Validación del formulario de creación
+            const createModuleForm = document.querySelector('.toggle-content form');
+            if (createModuleForm) {
+                createModuleForm.addEventListener('submit', function(e) {
+                    const numeroModulo = document.getElementById('numeroModulo').value;
+                    const nombreModulo = document.getElementById('nombreModulo').value.trim();
+                    
+                    if (!numeroModulo || numeroModulo < 1) {
+                        e.preventDefault();
+                        alert('El número de módulo debe ser mayor a 0');
+                        return;
+                    }
+                    
+                    if (!nombreModulo) {
+                        e.preventDefault();
+                        alert('El nombre del módulo es obligatorio');
+                        return;
+                    }
+                    
+                    // Mostrar loading
+                    const submitBtn = this.querySelector('button[type="submit"]');
+                    submitBtn.disabled = true;
+                    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Creando...';
+                });
+            }
+        });
+    </script>
+
+    <style>
+        .expandable-button {
+            width: 100%;
+        }
+        
+        .toggle-checkbox {
+            display: none;
+        }
+        
+        .toggle-button {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            background: #003366;
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            cursor: pointer;
+            text-align: center;
+            font-weight: 600;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+            border: none;
+            width: 100%;
+        }
+        
+        .toggle-button:hover {
+            background: #002244;
+            transform: translateY(-2px);
+        }
+        
+        .toggle-arrow {
+            transition: transform 0.3s ease;
+        }
+        
+        .toggle-checkbox:checked + .toggle-button .toggle-arrow {
+            transform: rotate(180deg);
+        }
+        
+        .toggle-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.5s ease;
+        }
+        
+        .toggle-checkbox:checked ~ .toggle-content {
+            max-height: 1000px;
+        }
+        
+        .text-muted {
+            color: #6c757d !important;
+            font-size: 0.85rem;
+        }
+    </style>
+</body>
+</html>

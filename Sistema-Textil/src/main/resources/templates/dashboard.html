@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Dashboard - Sistema Textil</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    
+</head>
+<body class="dashboard-body">
+    <div class="header">
+        <h1>🏭 Dashboard - Sistema Textil</h1>
+        <p>Bienvenido, <strong th:text="${usuario.nombreCompleto}">Usuario</strong></p>
+        <p>Rol: <strong th:text="${usuario.rol}">Rol</strong> | Username: <strong th:text="${usuario.username}">Username</strong></p>
+    </div>
+    
+    <div class="nav">
+        <h3>Navegación:</h3>
+        <a th:href="@{/web/modulos}">📦 Módulos</a>
+        <a th:href="@{/web/reportes}">📊 Reportes</a>
+        <a th:href="@{/web/historial-reportes}">📋 Historial</a>
+        <a th:href="@{/web/logout}" style="color: #dc3545;">🚪 Cerrar Sesión</a>
+    </div>
+
+    <div style="margin-top: 20px; padding: 15px; background: white; border-radius: 10px;">
+        <h3>🔗 Rutas Disponibles:</h3>
+        <p><strong>Web:</strong> <a th:href="@{/web/}">/web/</a></p>
+        <p><strong>API REST Usuarios:</strong> <a th:href="@{/api/usuarios}">/api/usuarios</a></p>
+        <p><strong>API Login:</strong> POST /api/usuarios/login</p>
+    </div>
+</body>
+</html>

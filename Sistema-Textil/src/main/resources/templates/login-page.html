@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema Textil - Login</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .toggle-form {
+            text-align: center;
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid #e8e8e8;
+        }
+        
+        .toggle-btn {
+            background: none;
+            border: none;
+            color: #667eea;
+            cursor: pointer;
+            font-size: 14px;
+            text-decoration: underline;
+            font-weight: 600;
+        }
+        
+        .toggle-btn:hover {
+            color: #764ba2;
+        }
+        
+        .form-hidden {
+            display: none;
+        }
+        
+        .form-visible {
+            display: block;
+            animation: slideDown 0.3s ease-out;
+        }
+        
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .password-strength {
+            margin-top: 5px;
+            font-size: 12px;
+        }
+        
+        .strength-weak { color: #dc3545; }
+        .strength-medium { color: #ffc107; }
+        .strength-strong { color: #28a745; }
+    </style>
+</head>
+<body class="login-body">
+    <div class="login-container">
+        <div class="login-card">
+            <h2>🏭 Sistema Textil</h2>
+            <p class="subtitle" id="form-subtitle">Iniciar Sesión en el Sistema</p>
+            
+            <!-- ✅ Formulario de Login -->
+            <form id="login-form" th:action="@{/web/login}" method="post" autocomplete="on" class="form-visible">
+                <div class="form-group">
+                    <label for="username">Usuario:</label>
+                    <input type="text" id="username" name="username" required class="form-control" 
+                           placeholder="Ingrese su usuario" autocomplete="username">
+                </div>
+                
+                <div class="form-group">
+                    <label for="password">Contraseña:</label>
+                    <input type="password" id="password" name="password" required class="form-control" 
+                           placeholder="Ingrese su contraseña" autocomplete="current-password">
+                </div>
+                
+                <div th:if="${param.error}" class="alert alert-error">
+                    <i class="fas fa-exclamation-circle"></i>
+                    <span th:text="${#strings.replace(param.error[0], '+', ' ')}">Credenciales incorrectas o usuario inactivo</span>
+                </div>
+                
+                <div th:if="${param.registroSuccess}" class="alert alert-success">
+                    <i class="fas fa-check-circle"></i>
+                    <span th:text="${#strings.replace(param.registroSuccess[0], '+', ' ')}">Usuario creado exitosamente</span>
+                </div>
+                
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-sign-in-alt"></i> Ingresar al Sistema
+                </button>
+            </form>
+
+            <!-- ✅ Formulario de Registro -->
+            <form id="register-form" th:action="@{/web/registrar}" method="post" autocomplete="on" class="form-hidden">
+                <div class="form-group">
+                    <label for="reg-username">Usuario:</label>
+                    <input type="text" id="reg-username" name="username" required class="form-control" 
+                           placeholder="Crear nombre de usuario" autocomplete="username" minlength="3" maxlength="50">
+                    <small style="color: #6c757d; font-size: 12px;">Mínimo 3 caracteres</small>
+                </div>
+                
+                <div class="form-group">
+                    <label for="reg-password">Contraseña:</label>
+                    <input type="password" id="reg-password" name="password" required class="form-control" 
+                           placeholder="Crear contraseña segura" autocomplete="new-password" minlength="4">
+                    <div id="password-strength" class="password-strength"></div>
+                    <small style="color: #6c757d; font-size: 12px;">Mínimo 4 caracteres</small>
+                </div>
+
+                <div class="form-group">
+                    <label for="reg-nombre">Nombre Completo:</label>
+                    <input type="text" id="reg-nombre" name="nombreCompleto" required class="form-control" 
+                           placeholder="Ingrese su nombre completo" autocomplete="name" maxlength="150">
+                </div>
+
+                <div class="form-group">
+                    <label for="reg-rol">Rol:</label>
+                    <select id="reg-rol" name="rol" required class="form-control">
+                        <option value="">Seleccione un rol</option>
+                        <option value="SUPERVISOR">👨‍💼 Supervisor</option>
+                        <option value="ADMIN">👑 Administrador</option>
+                    </select>
+                    <small style="color: #6c757d; font-size: 12px;">Los administradores tienen acceso completo</small>
+                </div>
+
+                <div th:if="${param.registroError}" class="alert alert-error">
+                    <i class="fas fa-exclamation-circle"></i>
+                    <span th:text="${#strings.replace(param.registroError[0], '+', ' ')}">Error en el registro</span>
+                </div>
+
+                <button type="submit" class="btn btn-success">
+                    <i class="fas fa-user-plus"></i> Crear Usuario
+                </button>
+            </form>
+
+            <!-- ✅ Toggle entre formularios -->
+            <div class="toggle-form">
+                <button type="button" id="toggle-btn" class="toggle-btn">
+                    ¿No tienes cuenta? Crear usuario
+                </button>
+            </div>
+
+            <div class="demo-credentials" style="margin-top: 20px; padding: 15px; background: #f8f9fa; border-radius: 8px;">
+                <strong>🌐 Rutas disponibles:</strong>
+                <div style="font-size: 12px; line-height: 1.4;">
+                    <p>• <strong>Web:</strong> <a href="/web/">/web/</a> (Interfaz principal)</p>
+                    <p>• <strong>API Usuarios:</strong> <a href="/api/usuarios">/api/usuarios</a></p>
+                    <p>• <strong>API Módulos:</strong> <a href="/api/modulos">/api/modulos</a></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const loginForm = document.getElementById('login-form');
+            const registerForm = document.getElementById('register-form');
+            const toggleBtn = document.getElementById('toggle-btn');
+            const formSubtitle = document.getElementById('form-subtitle');
+            const passwordInput = document.getElementById('reg-password');
+            const passwordStrength = document.getElementById('password-strength');
+            
+            let isLoginForm = true;
+
+            // Función para alternar entre formularios
+            function toggleForms() {
+                if (isLoginForm) {
+                    // Cambiar a registro
+                    loginForm.classList.remove('form-visible');
+                    loginForm.classList.add('form-hidden');
+                    registerForm.classList.remove('form-hidden');
+                    registerForm.classList.add('form-visible');
+                    toggleBtn.textContent = '¿Ya tienes cuenta? Iniciar sesión';
+                    formSubtitle.textContent = 'Crear Nueva Cuenta';
+                    isLoginForm = false;
+                    // Focus en el primer campo del registro
+                    document.getElementById('reg-username').focus();
+                } else {
+                    // Cambiar a login
+                    registerForm.classList.remove('form-visible');
+                    registerForm.classList.add('form-hidden');
+                    loginForm.classList.remove('form-hidden');
+                    loginForm.classList.add('form-visible');
+                    toggleBtn.textContent = '¿No tienes cuenta? Crear usuario';
+                    formSubtitle.textContent = 'Iniciar Sesión en el Sistema';
+                    isLoginForm = true;
+                    // Focus en el primer campo del login
+                    document.getElementById('username').focus();
+                }
+                
+                // Limpiar mensajes al cambiar de formulario
+                clearMessages();
+            }
+
+            // Función para limpiar mensajes
+            function clearMessages() {
+                // Esto limpiará los parámetros de la URL en una implementación real
+                // Por ahora, simplemente ocultamos los mensajes visualmente
+                const alerts = document.querySelectorAll('.alert');
+                alerts.forEach(alert => {
+                    alert.style.display = 'none';
+                });
+            }
+
+            // Función para verificar fortaleza de contraseña
+            function checkPasswordStrength(password) {
+                if (!password) {
+                    passwordStrength.textContent = '';
+                    return;
+                }
+                
+                let strength = 0;
+                if (password.length >= 4) strength++;
+                if (password.length >= 6) strength++;
+                if (/[A-Z]/.test(password)) strength++;
+                if (/[0-9]/.test(password)) strength++;
+                if (/[^A-Za-z0-9]/.test(password)) strength++;
+                
+                let strengthText = '';
+                let strengthClass = '';
+                
+                if (strength <= 2) {
+                    strengthText = 'Débil';
+                    strengthClass = 'strength-weak';
+                } else if (strength <= 4) {
+                    strengthText = 'Media';
+                    strengthClass = 'strength-medium';
+                } else {
+                    strengthText = 'Fuerte';
+                    strengthClass = 'strength-strong';
+                }
+                
+                passwordStrength.textContent = `Fortaleza: ${strengthText}`;
+                passwordStrength.className = `password-strength ${strengthClass}`;
+            }
+
+            // Event Listeners
+            toggleBtn.addEventListener('click', toggleForms);
+
+            // Verificación de contraseña en tiempo real
+            if (passwordInput) {
+                passwordInput.addEventListener('input', function() {
+                    checkPasswordStrength(this.value);
+                });
+            }
+
+            // Validación de formulario de login
+            loginForm.addEventListener('submit', function(e) {
+                const submitBtn = this.querySelector('button[type="submit"]');
+                const username = document.getElementById('username').value.trim();
+                const password = document.getElementById('password').value;
+                
+                if (!username || !password) {
+                    e.preventDefault();
+                    return;
+                }
+                
+                submitBtn.disabled = true;
+                submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Ingresando...';
+                
+                setTimeout(() => {
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = '<i class="fas fa-sign-in-alt"></i> Ingresar al Sistema';
+                }, 3000);
+            });
+
+            // Validación de formulario de registro
+            registerForm.addEventListener('submit', function(e) {
+                const submitBtn = this.querySelector('button[type="submit"]');
+                const username = document.getElementById('reg-username').value.trim();
+                const password = document.getElementById('reg-password').value;
+                const nombre = document.getElementById('reg-nombre').value.trim();
+                const rol = document.getElementById('reg-rol').value;
+                
+                // Validaciones básicas
+                if (username.length < 3) {
+                    e.preventDefault();
+                    alert('El usuario debe tener al menos 3 caracteres');
+                    return;
+                }
+                
+                if (password.length < 4) {
+                    e.preventDefault();
+                    alert('La contraseña debe tener al menos 4 caracteres');
+                    return;
+                }
+                
+                if (!nombre) {
+                    e.preventDefault();
+                    alert('El nombre completo es obligatorio');
+                    return;
+                }
+                
+                if (!rol) {
+                    e.preventDefault();
+                    alert('Debe seleccionar un rol');
+                    return;
+                }
+                
+                submitBtn.disabled = true;
+                submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Creando usuario...';
+                
+                setTimeout(() => {
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = '<i class="fas fa-user-plus"></i> Crear Usuario';
+                }, 3000);
+            });
+
+            // Focus inicial
+            if (loginForm.classList.contains('form-visible')) {
+                document.getElementById('username').focus();
+            }
+
+            // Limpiar URL parameters (simulación)
+            function cleanURL() {
+                if (window.history.replaceState && window.location.search) {
+                    const cleanURL = window.location.protocol + "//" + window.location.host + window.location.pathname;
+                    window.history.replaceState({}, document.title, cleanURL);
+                }
+            }
+            
+            // Limpiar URL después de 5 segundos
+            setTimeout(cleanURL, 5000);
+        });
+    </script>
+</body>
+</html>
