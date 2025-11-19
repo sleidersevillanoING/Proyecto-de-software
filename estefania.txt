@@ -1,1 +1,11 @@
 Trabajo de Estefania
+*Prototipo Alta fidelidad Figma*
+https://www.figma.com/design/e5xyZsM7i44lxKBE9tn11C/Proyect-Software?node-id=0-1&t=kdH3fogZqs1g7oZk-1
+
+*prototipo baja fidelidad balsamiq*
+https://balsamiq.cloud/s9xd4j5/p4c3u04
+
+*Pruebas de Usabilidad Maze*
+https://t.maze.co/466665368
+ * Resultados / Reporte*
+  https://app.maze.co/report/Sistema-Textil/1cwzba7mhvic5j3/intro
