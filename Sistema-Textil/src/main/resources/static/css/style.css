@@ -1,4 +1,7 @@
 /* ✅ ESTILOS GENERALES UNIFICADOS - SISTEMA TEXTIL */
+body {
+  background-color: red;
+}
 * {
     margin: 0;
     padding: 0;
