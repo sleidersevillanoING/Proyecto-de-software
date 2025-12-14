@@ -11,6 +11,7 @@
 	<groupId>com.proyectodesoftware</groupId>
 	<artifactId>Sistema-Textil</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
+	<packaging>jar</packaging>
 	<name>Sistema-Textil</name>
 	<description>Sistema de Recolección de Datos de Producción Textil</description>
 	<url/>
