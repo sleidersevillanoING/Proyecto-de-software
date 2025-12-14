@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Historial de Reportes</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="dashboard-body">
+
+    <div class="container">
+        <div class="header">
+            <p>Bienvenido, <strong th:text="${usuario.nombreCompleto}">Usuario</strong></p>
+            <p>Rol: <strong th:text="${usuario.rol}">Rol</strong> | Username: <strong th:text="${usuario.username}">Username</strong></p>
+        </div>
+        
+        <div class="nav">
+            <h3>Navegación:</h3>
+            <a th:href="@{/web/modulos}">📦 Módulos</a>
+            <a th:href="@{/web/reportes}">📊 Reportes</a>
+            <a th:href="@{/web/historial-reportes}">📋 Historial</a>
+            <a th:href="@{/web/logout}" style="color: #dc3545;">🚪 Cerrar Sesión</a>
+        </div>
+
+    ```
+        <!-- Título -->
+        <div class="row mb-4">
+            <div class="col">
+                <h2 class="text-center fw-bold">📊 Historial de Reportes de Producción</h2>
+                <p class="text-center text-muted">Listado de reportes generados en el sistema</p>
+            </div>
+        </div>
+
+        <!-- Filtro por módulo -->
+        <div class="card mb-4 shadow-sm">
+            <div class="card-body">
+                <form th:action="@{/reportes}" method="get" class="row g-3 align-items-end">
+                    <div class="col-md-6">
+                        <label class="form-label">Filtrar por módulo</label>
+                        <select name="moduloId" class="form-select">
+                            <option value="">-- Todos los módulos --</option>
+                            <option th:each="m : ${modulos}"
+                                    th:value="${m.id}"
+                                    th:text="${m.nombreModulo}">
+                            </option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <button type="submit" class="btn btn-primary w-100">🔍 Filtrar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+    <!-- Tabla de reportes -->
+    <div class="card shadow-sm">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-striped table-hover align-middle">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>ID</th>
+                            <th>Fecha Inicio</th>
+                            <th>Fecha Fin</th>
+                            <th>Total Producción</th>
+                            <th>Defectuosos</th>
+                            <th>Tiempo Promedio / Hora</th>
+                            <th>Generado Por</th>
+                            <th>Fecha Generación</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="reporte : ${reportes}">
+                            <td th:text="${reporte.id}"></td>
+                            <td th:text="${reporte.fechaInicio}"></td>
+                            <td th:text="${reporte.fechaFin}"></td>
+                            <td th:text="${reporte.totalProduccion}"></td>
+                            <td th:text="${reporte.totalDefectuosos}"></td>
+                            <td th:text="${reporte.tiempoPromedioHora}"></td>
+                            <td th:text="${reporte.generadoPor != null ? reporte.generadoPor.nombreCompleto : 'Sistema'}"></td>
+                            <td th:text="${#temporals.format(reporte.generadoEn, 'dd/MM/yyyy HH:mm')}"></td>
+                            <td>
+                                <a th:href="@{/reportes/{id}(id=${reporte.id})}" class="btn btn-sm btn-outline-primary">👁 Ver</a>
+                            </td>
+                        </tr>
+                        <tr th:if="${#lists.isEmpty(reportes)}">
+                            <td colspan="9" class="text-center text-muted">No existen reportes registrados</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    ```
+
+</div>
+
+<!-- Bootstrap JS -->
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+</body>
+</html>
