@@ -1,5 +1,6 @@
 package com.proyectodesoftware.Sistema_Textil.Controller;
 
+
 import com.proyectodesoftware.Sistema_Textil.Service.ProduccionService;
 import com.proyectodesoftware.Sistema_Textil.entities.Produccion;
 import org.springframework.http.ResponseEntity;
@@ -9,7 +10,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/produccion")
+@RequestMapping("/produccion")
 @CrossOrigin(origins = "*")
 public class ProduccionController {
 

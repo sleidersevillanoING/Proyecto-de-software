@@ -1,5 +1,6 @@
 package com.proyectodesoftware.Sistema_Textil.Controller;
 
+
 import com.proyectodesoftware.Sistema_Textil.Service.ModuloService;
 import com.proyectodesoftware.Sistema_Textil.entities.Modulo;
 import org.springframework.http.ResponseEntity;
@@ -9,7 +10,7 @@ import java.util.List;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("/api/modulos")
+@RequestMapping("/modulos")
 @CrossOrigin(origins = "*")
 public class ModuloController {
 

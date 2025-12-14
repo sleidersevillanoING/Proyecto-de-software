@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/produccion-hora")
+@RequestMapping("/produccion_hora")
 @CrossOrigin(origins = "*")
 public class ProduccionHoraController {
 
