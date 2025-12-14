@@ -16,8 +16,8 @@ public class ProduccionHora {
     @JoinColumn(name = "produccion_id", foreignKey = @ForeignKey(name = "fk_produccionhora_produccion"))
     private Produccion produccion;
 
-    @Column(nullable = false)
-    private LocalTime hora;
+        @Column(nullable = false)
+        private LocalTime hora;
 
     @Column(nullable = false, columnDefinition = "INT DEFAULT 0")
     private Integer cantidad = 0;
@@ -53,4 +53,6 @@ public class ProduccionHora {
 
     public LocalDateTime getCreadoEn() { return creadoEn; }
     public void setCreadoEn(LocalDateTime creadoEn) { this.creadoEn = creadoEn; }
+
+    
 }

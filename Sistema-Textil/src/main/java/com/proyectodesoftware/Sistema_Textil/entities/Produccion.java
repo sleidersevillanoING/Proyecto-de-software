@@ -33,6 +33,10 @@ public class Produccion {
     @Column(name = "defectuosos_total")
     private Integer defectuososTotal = 0;
 
+    @Column(nullable = false)
+    private Integer cantidadTotal;
+
+
     // Relación con Modulo - lado "back" de la relación
     @ManyToOne
     @JoinColumn(name = "modulo_id")
@@ -122,4 +126,10 @@ public class Produccion {
     public String getEficienciaFormateada() {
         return String.format("%.1f%%", getEficiencia());
     }
+
+    public void setCantidadTotal(Integer cantidadTotal) {
+        this.cantidadTotal = cantidadTotal;
+    }
+
+    
 }
