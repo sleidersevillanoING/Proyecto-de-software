@@ -9,6 +9,7 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 import java.util.Optional;
 
+
 @Repository
 public interface UsuarioRepository extends JpaRepository<Usuario, Long> {
     
@@ -42,4 +43,5 @@ public interface UsuarioRepository extends JpaRepository<Usuario, Long> {
     // ✅ QUERY PERSONALIZADA - Buscar por rol y que estén activos
     @Query("SELECT u FROM Usuario u WHERE u.rol = :rol AND u.activo = true")
     List<Usuario> findActivosByRol(@Param("rol") String rol);
+
 }
